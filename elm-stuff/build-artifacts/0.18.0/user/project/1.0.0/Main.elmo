@@ -1,0 +1,132 @@
+var _user$project$Main$update = F2(
+	function (msg, model) {
+		var _p0 = msg;
+		switch (_p0.ctor) {
+			case 'UpdateText':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{todo: _p0._0});
+			case 'AddItem':
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						todos: {ctor: '::', _0: model.todo, _1: model.todos}
+					});
+			default:
+				return _elm_lang$core$Native_Utils.update(
+					model,
+					{
+						todos: A2(
+							_elm_lang$core$List$filter,
+							function (t) {
+								return !_elm_lang$core$Native_Utils.eq(t, _p0._0);
+							},
+							model.todos)
+					});
+		}
+	});
+var _user$project$Main$model = {
+	todo: '',
+	todos: {ctor: '[]'}
+};
+var _user$project$Main$Model = F2(
+	function (a, b) {
+		return {todo: a, todos: b};
+	});
+var _user$project$Main$RemoveItem = function (a) {
+	return {ctor: 'RemoveItem', _0: a};
+};
+var _user$project$Main$todoItem = function (todo) {
+	return A2(
+		_elm_lang$html$Html$li,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: _elm_lang$html$Html$text(todo),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(
+							_user$project$Main$RemoveItem(todo)),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('x'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {ctor: '[]'}
+			}
+		});
+};
+var _user$project$Main$todoList = function (todos) {
+	var children = A2(_elm_lang$core$List$map, _user$project$Main$todoItem, todos);
+	return A2(
+		_elm_lang$html$Html$ul,
+		{ctor: '[]'},
+		children);
+};
+var _user$project$Main$AddItem = {ctor: 'AddItem'};
+var _user$project$Main$UpdateText = function (a) {
+	return {ctor: 'UpdateText', _0: a};
+};
+var _user$project$Main$view = function (model) {
+	return A2(
+		_elm_lang$html$Html$div,
+		{ctor: '[]'},
+		{
+			ctor: '::',
+			_0: A2(
+				_elm_lang$html$Html$input,
+				{
+					ctor: '::',
+					_0: _elm_lang$html$Html_Attributes$type_('text'),
+					_1: {
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onInput(_user$project$Main$UpdateText),
+						_1: {
+							ctor: '::',
+							_0: _elm_lang$html$Html_Attributes$value(model.todo),
+							_1: {ctor: '[]'}
+						}
+					}
+				},
+				{ctor: '[]'}),
+			_1: {
+				ctor: '::',
+				_0: A2(
+					_elm_lang$html$Html$button,
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html_Events$onClick(_user$project$Main$AddItem),
+						_1: {ctor: '[]'}
+					},
+					{
+						ctor: '::',
+						_0: _elm_lang$html$Html$text('Add Todo'),
+						_1: {ctor: '[]'}
+					}),
+				_1: {
+					ctor: '::',
+					_0: A2(
+						_elm_lang$html$Html$div,
+						{ctor: '[]'},
+						{
+							ctor: '::',
+							_0: _elm_lang$html$Html$text(model.todo),
+							_1: {ctor: '[]'}
+						}),
+					_1: {
+						ctor: '::',
+						_0: _user$project$Main$todoList(model.todos),
+						_1: {ctor: '[]'}
+					}
+				}
+			}
+		});
+};
+var _user$project$Main$main = _elm_lang$html$Html$beginnerProgram(
+	{model: _user$project$Main$model, update: _user$project$Main$update, view: _user$project$Main$view})();
