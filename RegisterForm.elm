@@ -3,7 +3,7 @@ module RegisterForm exposing (..)
 import Html exposing
   (program, Html, div, h1,
   text, input, button, textarea,
-  label)
+  label, ul, li)
 import Html.Attributes exposing
   (placeholder, type_, rows, value,
   class, disabled, required, novalidate)
@@ -13,6 +13,8 @@ import Html.Events exposing
 import Http
 import Json.Encode as Encode
 import Json.Decode as Decode
+
+import Maybe.Extra exposing (toList)
 
 import Validation exposing (..)
 
@@ -78,14 +80,18 @@ update msg model =
                   |> validate OnRelatedChange (confirmPasswordValidation password)
         }, Cmd.none)
     BlurPassword ->
-      ({ model | password = model.password })
+      ({ model | password = model.password
+                |> validate OnBlur passwordValidation
+      }, Cmd.none)
     InputConfirmPassword incomingConfirmPass ->
       ({ model | confirmPassword = model.confirmPassword
                   |> validate (OnChange incomingConfirmPass)
                     (confirmPasswordValidation model.confirmPassword)
       }, Cmd.none)
     BlurConfirmPassword ->
-      ({ model | confirmPassword = model.confirmPassword })
+      ({ model | confirmPassword = model.confirmPassword
+                  |> validate OnBlur (confirmPasswordValidation model.password)
+      }, Cmd.none)
     CheckAcceptPolicy incomingCheck ->
       ({ model | acceptPolicy = field incomingCheck }, Cmd.none)
     Submit ->
@@ -243,14 +249,39 @@ view model =
     [ header model
     , body model
     , footer model
-    , div [] [ model |> toString |> text ]
+    -- , div [] [ model |> toString |> text ]
     ]
+
+listErrors : Model -> Html msg
+listErrors model =
+  let
+      errors =
+        [ extractError model.email
+        , extractError model.password
+        , extractError model.confirmPassword
+        , extractError model.acceptPolicy
+        ]
+        |> List.concatMap toList
+
+      createListItem s =
+        li [] [ text s ]
+  in
+      case errors of
+          [] ->
+            text ""
+          _ ->
+            div []
+              [ text "Please fix the following errors:"
+              , ul [] (errors |> List.map createListItem)
+              ]
+              
 
 header : Model -> Html a
 header model =
   div []
     [ h1 [] [ text "Register" ]
     , renderHttpRequestStatus model.status
+    , listErrors model
     ]
 
 body : Model -> Html Msg
@@ -266,7 +297,7 @@ body model =
         , value (model.email |> rawValue)
         , required True
         ] []
-      , errorLabel model.email
+      -- , errorLabel model.email
       ]
     , div []
       [ input
@@ -278,7 +309,7 @@ body model =
         , value (model.password |> rawValue)
         , required True
         ] []
-      , errorLabel model.password
+      -- , errorLabel model.password
       ]
     , div []
       [ input
@@ -289,7 +320,7 @@ body model =
         , value (model.confirmPassword |> rawValue)
         , required True
         ] []
-      , errorLabel model.confirmPassword
+      -- , errorLabel model.confirmPassword
       ]
     , div []
       [ input
@@ -301,7 +332,7 @@ body model =
         ] []
       , label [] [ text "I accept the privacy policy" ]
       ]
-    , div [] [ errorLabel model.acceptPolicy ]
+    -- , div [] [ errorLabel model.acceptPolicy ]
     ]
 
 footer : Model -> Html Msg

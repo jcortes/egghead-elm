@@ -52,12 +52,12 @@ validate event validate (Field value validity) =
   case event of
     OnSubmit ->
       validateAlways validate (Field value validity)
+    OnBlur ->
+      validateAlways validate (Field value validity)
     OnChange newValue ->
       validateIfValidated validate (Field newValue validity)
     OnRelatedChange ->
       validateIfValidated validate (Field value validity)
-    OnBlur ->
-      validateAlways validate (Field value validity)
 
 validateIfValidated : Validator raw a -> Field raw a -> Field raw a
 validateIfValidated validate (Field value validity) =
